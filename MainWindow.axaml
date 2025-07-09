@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:QuizAppAvalonia.ViewModels"
+        xmlns:conv="clr-namespace:QuizAppAvalonia.Converters"
+        x:Class="QuizAppAvalonia.MainWindow"
+        Title="Quiz App" Width="500" Height="400">
+
+	<Window.Resources>
+		<conv:BoolToBrushConverter x:Key="BoolToBrushConverter" />
+		<conv:EndQuizVisibilityConverter x:Key="EndQuizVisibilityConverter" />
+		<conv:ResultToColorConverter x:Key="ResultToColorConverter" />
+	</Window.Resources>
+
+	<Window.DataContext>
+		<vm:MainWindowViewModel />
+	</Window.DataContext>
+
+	<StackPanel Margin="20">
+		<TextBlock Text="{Binding QuestionCounter}" FontSize="14" Foreground="{DynamicResource ThemeForegroundBrush}" Margin="0,0,0,5"/>
+		<TextBlock Text="{Binding QuestionText}" FontSize="20" Foreground="{DynamicResource ThemeForegroundBrush}" Margin="0,0,0,20"/>
+
+		<ItemsControl ItemsSource="{Binding Answers}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Button Content="{Binding}"
+                            Command="{Binding DataContext.SelectAnswerCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}"
+                            Background="{Binding DataContext.SelectedAnswer, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToBrushConverter}, ConverterParameter={Binding}}"
+                            Margin="5"
+                            Padding="10"/>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<TextBlock Text="{Binding TimeLeft}" FontSize="16" Foreground="{DynamicResource ThemeForegroundBrush}" HorizontalAlignment="Right" Margin="0,0,0,10"/>
+		<TextBlock Text="{Binding Result}"
+				   FontSize="16"
+				   Margin="0,10,0,10"
+				   Foreground="{Binding Result, Converter={StaticResource ResultToColorConverter}}"
+				   TextWrapping="Wrap"/>
+
+
+		<Button Content="Powtórz test"
+                Command="{Binding RestartQuizCommand}"
+                IsVisible="{Binding Result, Converter={StaticResource EndQuizVisibilityConverter}}"
+                Margin="10"/>
+	</StackPanel>
+</Window>
